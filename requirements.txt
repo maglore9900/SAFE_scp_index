@@ -8,3 +8,4 @@ faiss-cpu
 pypdf
 unstructured
 python-pptx
+sentence_transformers
