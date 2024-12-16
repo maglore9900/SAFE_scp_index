@@ -10,22 +10,49 @@ from langchain_community.document_loaders import (
     UnstructuredCSVLoader
 )
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQAWithSourcesChain 
 from pathlib import Path
+from typing import Dict
+from modules import prompts
 
 
 class Adapter:
     def __init__(self, env):
         self.llm_text = env("LLM_TYPE")
+        self.char_prompt = getattr(prompts, "safe", "You are a helpful assistant.")
+        self.char_prompt = self.char_prompt + "\n<USER QUERY>{query}</USER QUERY>"
         if self.llm_text.lower() == "openai":
             from langchain_openai import OpenAIEmbeddings, ChatOpenAI
             from phi.model.openai import OpenAIChat
+            self.prompt = ChatPromptTemplate.from_template(
+                "answer the following request: {query}"
+            )
             self.llm = ChatOpenAI(model_name=env("OPENAI_MODEL"), temperature=0.4)
             self.model = OpenAIChat(id=env("OPENAI_MODEL"))
             self.embedding = OpenAIEmbeddings(model="text-embedding-ada-002")
         elif self.llm_text.lower() == "local":
-            pass
+            from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+            from langchain_community.chat_models import ChatOllama
+            from langchain_community.llms import Ollama
+            self.llm = Ollama(base_url=self.ollama_url, model=self.local_model)
+            self.prompt = ChatPromptTemplate.from_template(
+                "answer the following request: {query}"
+            )
+            self.llm_chat = ChatOllama(
+                base_url=self.ollama_url, model=self.local_model
+            )
+            model_name = "BAAI/bge-small-en"
+            model_kwargs = {"device": "cpu"}
+            encode_kwargs = {"normalize_embeddings": True}
+            self.embedding = HuggingFaceBgeEmbeddings(
+                model_name=model_name,
+                model_kwargs=model_kwargs,
+                encode_kwargs=encode_kwargs,
+            )
+        else:
+            raise ValueError("Invalid LLM")
 
     def add_to_datastore(self, filename):
         try:
@@ -124,7 +151,7 @@ class Adapter:
         results = vector_store.search(query=".", search_type="similarity")
         print(results)
         
-    def add_content_to_datastore(self, content, meta=None: Dict, datastore=vectorstore):
+    def add_content_to_datastore(self, content, meta: Dict = None, datastore="vectorstore"):
         "Adds raw content to datastore with optional metadata."
         try:
             if not meta:
@@ -149,7 +176,7 @@ class Adapter:
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    def add_doc_to_datastore(self, filename, meta=None, datastore=vectorstore):
+    def add_doc_to_datastore(self, content, meta: Dict = None, datastore="vectorstore"):
         "Adds files to datastore with optional metadata."
         try:
             doc = self.load_document(filename)
@@ -163,3 +190,8 @@ class Adapter:
             print(f"Successfully added {filename} to the datastore.")
         except Exception as e:
             print(f"An error occurred: {e}")
+    
+    def chat(self, query):
+        from langchain_core.output_parsers import StrOutputParser
+        result = self.llm.invoke(self.char_prompt.format(query=query))
+        return result.content
