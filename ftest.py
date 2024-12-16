@@ -65,7 +65,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 import os
 entry = []
 UUID = 0
-pattern = r"^SCP-\d+$"
+pattern = r"^Identifier: (SCP-\d+)$"
 with open('test.txt', 'r') as file:
     f = file.read()
     for g in f.split('",'):
@@ -75,9 +75,12 @@ with open('test.txt', 'r') as file:
         lines = g.split('\n')
         for l in lines:
             l = re.sub(r'^"','', l)
-            entry.append(l)
-            if re.match(pattern, l):
-                scp_name = l
+            entry.append(f"{l}\n")
+            match = re.match(pattern, l)
+            if match:
+                scp_name = match.group(1)
+            # if re.match(pattern, l):
+            #     scp_name = l
         content = ' '.join(entry)
         print(f"setting document object for {scp_name}")
         document = Document(
