@@ -22,11 +22,11 @@ embeddings = HuggingFaceBgeEmbeddings(
     model_kwargs=model_kwargs,
     encode_kwargs=encode_kwargs,
 )
-import faiss
+# import faiss
 
-index = faiss.IndexFlatL2(len(embeddings.embed_query("hello world")))
+# index = faiss.IndexFlatL2(len(embeddings.embed_query("hello world")))
 
-
+from datetime import datetime
 # print(results)
 # from langchain_community.vectorstores import FAISS
 # vectorstore = FAISS(
@@ -35,13 +35,20 @@ index = faiss.IndexFlatL2(len(embeddings.embed_query("hello world")))
 #     docstore="scp_data",
 #     index_to_docstore_id={},
 # )
+
+load_start = datetime.now()
 vectorstore = FAISS.load_local("scp_data", embeddings, allow_dangerous_deserialization=True)
+load_finish = datetime.now()
+
+search_start = datetime.now()
 
 results = vectorstore.similarity_search(
-    "a",
+    "scp-010",
     k=2,
     filter={"SCP_ID": "SCP-010"},
 )
+search_finish = datetime.now()
 # for res in results:
 print(results)
+print(f"load time: {load_finish - load_start}\n search time: {search_finish - search_start}")
 #     print(f"* {res.page_content} [{res.metadata}]")
