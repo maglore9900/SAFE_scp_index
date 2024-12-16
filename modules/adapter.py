@@ -34,8 +34,9 @@ class Adapter:
             self.embedding = OpenAIEmbeddings(model="text-embedding-ada-002")
         elif self.llm_text.lower() == "local":
             from langchain_community.embeddings import HuggingFaceBgeEmbeddings
-            from langchain_community.chat_models import ChatOllama
-            from langchain_community.llms import Ollama
+            # from langchain_community.chat_models import ChatOllama
+            from langchain_ollama import ChatOllama, OllamaLLM as Ollama
+            # from langchain_community.llms import Ollama
             self.ollama_url = env("OLLAMA_URL")
             self.local_model = env("LOCAL_MODEL")
             self.llm = Ollama(base_url=self.ollama_url, model=self.local_model)
@@ -178,7 +179,8 @@ class Adapter:
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    def add_doc_to_datastore(self, content, meta: Dict = None, datastore="vectorstore"):
+    def add_doc_to_datastore(self, filename, meta: Dict = None, datastore="vectorstore"):
+        #! add meta data add option
         "Adds files to datastore with optional metadata."
         try:
             doc = self.load_document(filename)
@@ -193,9 +195,24 @@ class Adapter:
         except Exception as e:
             print(f"An error occurred: {e}")
     
-    def chat(self, query):
+    def chat(self, query, user):
         from langchain_core.output_parsers import StrOutputParser
         result = self.llm.invoke(self.char_prompt.format(query=query))
         if self.llm_text == "openai":
             result = result.content
+
+        result = f"""[Session Begin]
+<<< S.A.F.E >>>
+Welcome, Agent [{user}].
+
+Request Received: {query}
+
+Performing Clearance Verification...
+Clearance Verified.
+
+""" + result + """
+
+Reminder: Ensure this information remains within Foundation parameters. Unauthorized dissemination is subject to immediate disciplinary action.
+[Session End]
+"""
         return result

@@ -6,4 +6,4 @@ environ.Env.read_env()
 
 ad = adapter.Adapter(env)
 
-print(ad.chat("tell me about yourself"))
+print(ad.chat("tell me about yourself", "Smith"))
