@@ -36,6 +36,8 @@ class Adapter:
             from langchain_community.embeddings import HuggingFaceBgeEmbeddings
             from langchain_community.chat_models import ChatOllama
             from langchain_community.llms import Ollama
+            self.ollama_url = env("OLLAMA_URL")
+            self.local_model = env("LOCAL_MODEL")
             self.llm = Ollama(base_url=self.ollama_url, model=self.local_model)
             self.prompt = ChatPromptTemplate.from_template(
                 "answer the following request: {query}"
@@ -194,4 +196,6 @@ class Adapter:
     def chat(self, query):
         from langchain_core.output_parsers import StrOutputParser
         result = self.llm.invoke(self.char_prompt.format(query=query))
-        return result.content
+        if self.llm_text == "openai":
+            result = result.content
+        return result
