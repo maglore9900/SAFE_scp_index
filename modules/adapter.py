@@ -124,3 +124,42 @@ class Adapter:
         results = vector_store.search(query=".", search_type="similarity")
         print(results)
         
+    def add_content_to_datastore(self, content, meta=None: Dict, datastore=vectorstore):
+        "Adds raw content to datastore with optional metadata."
+        try:
+            if not meta:
+                vectorstore = FAISS.from_texts(content, self.embedding)
+            else:
+                file_meta = {}
+                for each in meta:
+                    key, value = each.split(':')
+                    file_meta[key] = value
+                document = Document(
+                    page_content=content,
+                    metadata={file_meta},
+                )
+                vectorstore = FAISS.from_documents(docs, self.embedding)
+            if not Path(datastore / "index.faiss").exists():
+                vectorstore.save_local(f"vector_store/store.faiss")
+            else:
+                tmp_vectorstore = FAISS.from_documents(doc, self.embedding)
+                vectorstore.merge_from(tmp_vectorstore)
+                vectorstore.save_local(datastore / "index.faiss") 
+            print(f"data saved to {datastore}")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    def add_doc_to_datastore(self, filename, meta=None, datastore=vectorstore):
+        "Adds files to datastore with optional metadata."
+        try:
+            doc = self.load_document(filename)
+            vectorstore = FAISS.from_documents(doc, self.embedding)
+            if not Path(datastore / "index.faiss").exists():
+                vectorstore.save_local(f"vector_store/store.faiss")
+            else:
+                tmp_vectorstore = FAISS.from_documents(doc, self.embedding)
+                vectorstore.merge_from(tmp_vectorstore)
+                vectorstore.save_local(datastore / "index.faiss")
+            print(f"Successfully added {filename} to the datastore.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
