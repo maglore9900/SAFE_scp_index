@@ -205,7 +205,7 @@ class Adapter:
 <<< S.A.F.E >>>
 Welcome, Agent [{user}].
 
-Request Received: {query}
+Request Received: "{query}"
 
 Performing Clearance Verification...
 Clearance Verified.
