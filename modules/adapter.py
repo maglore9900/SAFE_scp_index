@@ -13,6 +13,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQAWithSourcesChain 
+from langchain_core.documents import Document
 from pathlib import Path
 from typing import Dict
 from modules import prompts
@@ -110,7 +111,6 @@ class Adapter:
             print(f"An error occurred: {e}")
             return f"An error occurred: {e}"
 
-            
     def load_document(self, filename):
         loaders = {
             ".pdf": PyPDFLoader,
@@ -137,22 +137,6 @@ class Adapter:
             chunk_size=1000, chunk_overlap=30
         )
         return text_splitter.split_documents(documents=documents)
-    
-    def faiss_test(self, filename):
-        import faiss
-        from langchain_community.docstore.in_memory import InMemoryDocstore
-        doc = self.load_document(filename)
-        index = faiss.IndexFlatL2(len(self.embedding.embed_query("hello world")))
-        # index = None
-        vector_store = FAISS(
-            embedding_function=self.embedding,
-            index=index,
-            docstore=InMemoryDocstore(),
-            index_to_docstore_id={},
-        )
-        vector_store.add_documents(doc)
-        results = vector_store.search(query=".", search_type="similarity")
-        print(results)
         
     def add_content_to_datastore(self, content, meta: Dict = None, datastore="vectorstore"):
         "Adds raw content to datastore with optional metadata."
@@ -168,13 +152,13 @@ class Adapter:
                     page_content=content,
                     metadata={file_meta},
                 )
-                vectorstore = FAISS.from_documents(docs, self.embedding)
+                vectorstore = FAISS.from_documents(document, self.embedding)
             if not Path(datastore / "index.faiss").exists():
-                vectorstore.save_local(f"vector_store/store.faiss")
+                vectorstore.save_local(datastore)
             else:
-                tmp_vectorstore = FAISS.from_documents(doc, self.embedding)
+                tmp_vectorstore = FAISS.from_documents(document, self.embedding)
                 vectorstore.merge_from(tmp_vectorstore)
-                vectorstore.save_local(datastore / "index.faiss") 
+                vectorstore.save_local(datastore) 
             print(f"data saved to {datastore}")
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -186,17 +170,16 @@ class Adapter:
             doc = self.load_document(filename)
             vectorstore = FAISS.from_documents(doc, self.embedding)
             if not Path(datastore / "index.faiss").exists():
-                vectorstore.save_local(f"vector_store/store.faiss")
+                vectorstore.save_local(datastore)
             else:
                 tmp_vectorstore = FAISS.from_documents(doc, self.embedding)
                 vectorstore.merge_from(tmp_vectorstore)
-                vectorstore.save_local(datastore / "index.faiss")
+                vectorstore.save_local(datastore)
             print(f"Successfully added {filename} to the datastore.")
         except Exception as e:
             print(f"An error occurred: {e}")
     
     def chat(self, query, user):
-        from langchain_core.output_parsers import StrOutputParser
         result = self.llm.invoke(self.char_prompt.format(query=query))
         if self.llm_text == "openai":
             result = result.content
