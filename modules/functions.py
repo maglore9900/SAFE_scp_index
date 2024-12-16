@@ -14,7 +14,7 @@ embeddings = HuggingFaceBgeEmbeddings(
     encode_kwargs=encode_kwargs,
 )
 
-vectorstore = FAISS.load_local("scp_data", embeddings, allow_dangerous_deserialization=True)
+vectorstore = FAISS.load_local("scp_data\db_0", embeddings, allow_dangerous_deserialization=True)
 
 while True:
     query = input("Enter Search Criteria\n")
