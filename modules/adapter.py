@@ -27,20 +27,24 @@ class Adapter:
         if self.llm_text.lower() == "openai":
             from langchain_openai import OpenAIEmbeddings, ChatOpenAI
             from phi.model.openai import OpenAIChat
+            self.model = OpenAIChat(id=env("OPENAI_MODEL"))
             self.prompt = ChatPromptTemplate.from_template(
                 "answer the following request: {query}"
             )
-            self.llm = ChatOpenAI(model_name=env("OPENAI_MODEL"), temperature=0.4)
+            self.llm_chat = ChatOpenAI(model_name=env("OPENAI_MODEL"), temperature=0.4)
             self.model = OpenAIChat(id=env("OPENAI_MODEL"))
             self.embedding = OpenAIEmbeddings(model="text-embedding-ada-002")
         elif self.llm_text.lower() == "local":
             from langchain_community.embeddings import HuggingFaceBgeEmbeddings
             # from langchain_community.chat_models import ChatOllama
-            from langchain_ollama import ChatOllama, OllamaLLM as Ollama
+            from langchain_ollama import ChatOllama, OllamaLLM
+            from phi.model.ollama import Ollama
+            from phi.agent import Agent
+            self.model = Ollama(id=env("LOCAL_MODEL"))
             # from langchain_community.llms import Ollama
             self.ollama_url = env("OLLAMA_URL")
             self.local_model = env("LOCAL_MODEL")
-            self.llm = Ollama(base_url=self.ollama_url, model=self.local_model)
+            self.llm = OllamaLLM(base_url=self.ollama_url, model=self.local_model)
             self.prompt = ChatPromptTemplate.from_template(
                 "answer the following request: {query}"
             )
@@ -99,7 +103,7 @@ class Adapter:
 
             # Create the QA chain with the loaded retriever
             qa = RetrievalQAWithSourcesChain.from_chain_type(
-                llm=self.llm, chain_type="stuff", retriever=retriever, verbose=True
+                llm=self.llm_chat, chain_type="stuff", retriever=retriever, verbose=True
             )
 
             # Query the retriever using the input query
@@ -180,7 +184,7 @@ class Adapter:
             print(f"An error occurred: {e}")
     
     def chat(self, query, user):
-        result = self.llm.invoke(self.char_prompt.format(query=query))
+        result = self.llm_chat.invoke(self.char_prompt.format(query=query))
         if self.llm_text == "openai":
             result = result.content
 
@@ -188,7 +192,7 @@ class Adapter:
 <<< S.A.F.E >>>
 Welcome, Agent [{user}].
 
-Request Received: "{query}"
+Request Received: [{query}]
 
 Performing Clearance Verification...
 Clearance Verified.

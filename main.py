@@ -103,23 +103,24 @@ async def on_message(message):
     attachments = []
     if client.user in message.mentions or any(role in message.role_mentions for role in message.guild.get_member(client.user.id).roles):
         print("heard")
-        if not is_in_thread:
-            thread = await message.create_thread(name="Max's Response")
-        else:
-            thread = message.channel
+        
         if len(message.attachments) > 0:
             print("found attachment")
             for attachment in message.attachments:
                 await attachment.save(fp=f"./tmp/{attachment.filename}")
                 attachments.append(f"{attachment.filename}")
         received_message = message.content.replace(f'<@{client.user.id}>', '').strip()
+        if not is_in_thread:
+            thread = await message.create_thread(name=f"S.A.F.E [{received_message}]")
+        else:
+            thread = message.channel
         username = await get_username(message.author.id)  # Await the username function
         date = await get_current_datetime()
         custom_query = prompt.format(date=date, username=username, query=received_message)
         print(custom_query)
         try:
             output = await ag.invoke_agent(custom_query, attachments)
-            output = output.content
+            # output = output.content
         except Exception as e:
             output = f"Error: {e}"
 

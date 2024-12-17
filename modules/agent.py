@@ -52,26 +52,44 @@ class Agents():
             name="Response Agent",
             role="A response agent that responds to the user based on the context provided.",
             model=self.model,
-            description=prompts.max,
+            description=prompts.safe,
             instructions=["Reword the context in your style","Do not reply to the context, reword the context for the user","Always include sources"],
             show_tool_calls=True,
             markdown=True,
         )
         self.agent_team = Agent (
-            team=[self.websearch_agent, self.data_store_agent],
+            team=[self.websearch_agent],#, self.data_store_agent],
             instructions=["First choose the best agent or agents to answer the user query", "Always use Response Agent at the end to respond to the user with the information","When a user asks a question pertaining to a file of any kind, pass that to the Data Store Agent. This agent will tell you if that information or file exists."],
             show_tool_calls=True,
             markdown=True,   
         )
         
-    async def invoke_agent(self, query, filename=None): 
+    async def invoke_agent(self, query, user, filename=None): 
         if filename:
             query = query + " these files: " + ", ".join(filename)
         self.active_mem.add_data(query)
         print(f"current active mem length: {len(self.active_mem.value)}")
         prompt = self.prompt.format(query=query, chat_history=self.active_mem.value)
         result = await self.agent_team.arun(prompt)
+        # print(result)
+        # print()
         #! character response
         result = await self.response_agent.arun(self.response.format(query=query, context=result.content))
         self.active_mem.add_data(result.content)
+        result = result.content
+        result = f"""[Session Begin]
+<<< S.A.F.E >>>
+Welcome, Agent [{user}].
+
+Request Received: [{query}]
+
+Performing Clearance Verification...
+Clearance Verified.
+
+""" + result + """
+
+Reminder: Ensure this information remains within Foundation parameters. Unauthorized dissemination is subject to immediate disciplinary action.
+[Session End]
+"""
         return result
+
