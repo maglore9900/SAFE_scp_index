@@ -28,7 +28,7 @@ class Adapter:
             from langchain_openai import OpenAIEmbeddings, ChatOpenAI
             from phi.model.openai import OpenAIChat
             self.model = OpenAIChat(id=env("OPENAI_MODEL"))
-            self.model2 = OpenAIChat(id=env("OPENAI_MODEL2"))
+            self.model2 = OpenAIChat(id=env("OPENAI_MODEL2", default=env("OPENAI_MODEL")))
             self.prompt = ChatPromptTemplate.from_template(
                 "answer the following request: {query}"
             )
@@ -42,7 +42,7 @@ class Adapter:
             from phi.model.ollama import Ollama
             from phi.agent import Agent
             self.model = Ollama(id=env("LOCAL_MODEL"))
-            self.model2 = Ollama(id=env("LOCAL_MODEL2"))
+            self.model2 = Ollama(id=env("LOCAL_MODEL2", default=env("LOCAL_MODEL")))
             # from langchain_community.llms import Ollama
             self.ollama_url = env("OLLAMA_URL")
             self.local_model = env("LOCAL_MODEL")
