@@ -9,6 +9,6 @@ ad = adapter.Adapter(env)
 ag = agent.Agents(env)
 
 loop = asyncio.get_event_loop()
-print(loop.run_until_complete(ag.invoke_agent("tell me about yscp-5000", "Smith")))
+print(loop.run_until_complete(ag.invoke_agent("tell me about scp-5000", "Smith")))
 
 # print(ad.chat("tell me about yourself", "Smith"))

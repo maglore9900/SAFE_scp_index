@@ -7,6 +7,7 @@ class Agents():
         self.env = env
         self.ad = adapter.Adapter(env)
         self.model = self.ad.model
+        self.model2 = self.ad.model2
         self.filename = None
         self.active_mem = active_mem.TokenLimitedString(2000)
         self.searxng = Searxng(
@@ -51,7 +52,7 @@ class Agents():
         self.response_agent = Agent(
             name="Response Agent",
             role="A response agent that responds to the user based on the context provided.",
-            model=self.model,
+            model=self.model2,
             description=prompts.safe,
             instructions=["Reword the context in your style","Do not reply to the context, reword the context for the user","Always include sources"],
             show_tool_calls=True,
