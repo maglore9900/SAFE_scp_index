@@ -3,6 +3,7 @@ import environ
 from modules import agent
 import asyncio
 from datetime import datetime
+import re
 
 env = environ.Env()
 environ.Env.read_env()
@@ -109,7 +110,7 @@ async def on_message(message):
             for attachment in message.attachments:
                 await attachment.save(fp=f"./tmp/{attachment.filename}")
                 attachments.append(f"{attachment.filename}")
-        received_message = message.content.replace(f'<@{client.user.id}>', '').strip()
+        received_message = re.sub(r'<@.*?>', '', message.content).strip()
         if not is_in_thread:
             thread = await message.create_thread(name=f"S.A.F.E [{received_message}]")
         else:
@@ -119,7 +120,7 @@ async def on_message(message):
         custom_query = prompt.format(date=date, username=username, query=received_message)
         print(custom_query)
         try:
-            output = await ag.invoke_agent(custom_query, attachments)
+            output = await ag.invoke_agent(received_message, username, attachments)
             # output = output.content
         except Exception as e:
             output = f"Error: {e}"
