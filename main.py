@@ -112,7 +112,7 @@ async def on_message(message):
                 attachments.append(f"{attachment.filename}")
         received_message = re.sub(r'<@.*?>', '', message.content).strip()
         if not is_in_thread:
-            thread = await message.create_thread(name=f"S.A.F.E [{received_message}]")
+            thread = await message.create_thread(name=f"S.A.F.E [{received_message[:20]}]")
         else:
             thread = message.channel
         username = await get_username(message.author.id)  # Await the username function
