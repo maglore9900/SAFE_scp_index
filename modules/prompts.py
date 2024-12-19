@@ -74,16 +74,14 @@ deny_type = [
     "SCP systems will remain operational, but your terminal has been flagged for quarantine. Further access will not be permitted.*",
     
     "> **S.A.F.E Protocol Response Gamma:**\n"
-    "> *Access Denied. Your terminals unique identifiers have been anonymized. Persistent connection logs will now reflect "
-    "your activity for analysis. Future attempts will escalate to Counter-Breach Protocol Omega.*",
+    "> *Access Denied. Your terminals unique identifiers have been anonymized. Persistent connection logs will now reflect your activity for analysis. Future attempts will escalate to Counter-Breach Protocol Omega.*",
     
     "> **S.A.F.E Protocol Response Delta:**\n"
     "> *Warning: Temporal anomalies detected in access timestamps. This suggests SCP influence."
     "Incident flagged for Temporal Division investigation. Disconnect immediately to avoid further contamination.*",
     
     "> **S.A.F.E Protocol Response Lambda:**\n"
-    "> *Unauthorized intrusion flagged as hostile. Defensive countermeasures have been initiated, including digital trace routing "
-    "and localized containment procedures. Do not proceed.*",
+    "> *Unauthorized intrusion flagged as hostile. Defensive countermeasures have been initiated, including digital trace routing and localized containment procedures. Do not proceed.*",
     
     "> **S.A.F.E Protocol Response Omega:**\n"
     "> *Critical unauthorized activity confirmed. Counter-Breach Division has been deployed to your location."
