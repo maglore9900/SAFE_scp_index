@@ -30,6 +30,7 @@ class Agents():
         User: {query}
         Context: {context}
         """
+        self.gate = prompts.gate
         self.websearch_agent = Agent(
             name="Web Agent",
             role="A web search agent that uses a search engine to find information.",
@@ -66,6 +67,9 @@ class Agents():
         )
         
     async def invoke_agent(self, query, user, filename=None): 
+        gate = self.ad.llm_chat.invoke(self.gate.format(query=query))
+        if "no" in gate.content.lower():
+            return "<ACCESS DENIED>"
         if filename:
             query = query + " these files: " + ", ".join(filename)
         self.active_mem.add_data(query)
@@ -80,9 +84,9 @@ class Agents():
         result = result.content
         result = f"""[Session Begin]
 <<< S.A.F.E >>>
-Welcome, Agent [{user}].
+Welcome, Agent [ {user} ].
 
-Request Received: [{query}]
+Request Received: [ {query} ]
 
 Performing Clearance Verification...
 Clearance Verified.
