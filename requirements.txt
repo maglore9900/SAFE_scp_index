@@ -1,7 +1,6 @@
 phidata
 openai
 python-environ
-langchainhub==0.1.15 
 langchain_experimental
 langchain_openai
 langchain_ollama
