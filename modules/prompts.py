@@ -50,44 +50,44 @@ The SCP Foundation is a fictional organization featured in stories created by co
 
 deny_type = [
     "> **S.A.F.E Protocol Response Alpha:**\n"
-    "> *'Access Denied. Your clearance level is insufficient to access this information. "
-    "Please consult your Site Administrator for proper clearance. Unauthorized attempts are logged and monitored.'*",
+    "> *Access Denied. Your clearance level is insufficient to access this information."
+    "Please consult your Site Administrator for proper clearance. Unauthorized attempts are logged and monitored.*",
     
     "> **S.A.F.E Protocol Response Beta:**\n"
-    "> *'Multiple unauthorized access attempts detected. This activity has been flagged as a potential security risk. "
-    "Foundation Security will be notified if further attempts are made.'*",
+    "> *Multiple unauthorized access attempts detected. This activity has been flagged as a potential security risk."
+    "Foundation Security will be notified if further attempts are made.*",
     
     "> **S.A.F.E Protocol Response Theta:**\n"
-    "> *'Anomalous behavior detected in access patterns. Possible SCP-level interference. "
-    "Initiating internal containment countermeasures. Cease all unauthorized actions immediately.'*",
+    "> *Anomalous behavior detected in access patterns. Possible SCP-level interference."
+    "Initiating internal containment countermeasures. Cease all unauthorized actions immediately.*",
     
     "> **S.A.F.E Protocol Response Sigma:**\n"
-    "> *'Access Denied. A breach attempt has been detected. Secure systems are initiating lockdown protocols across this network. "
-    "This event has been logged under Incident Code #[REDACTED].'*",
+    "> *Access Denied. A breach attempt has been detected. Secure systems are initiating lockdown protocols across this network."
+    "This event has been logged under Incident Code #[REDACTED].*",
     
     "> **S.A.F.E Protocol Response Epsilon:**\n"
-    "> *'Unauthorized attempt recognized. Mock access granted. Redirecting user to decoy files. "
-    "All activities are under surveillance. Proceeding further will result in Foundation intervention.'*",
+    "> *Unauthorized attempt recognized. Mock access granted. Redirecting user to decoy files."
+    "All activities are under surveillance. Proceeding further will result in Foundation intervention.*",
     
     "> **S.A.F.E Protocol Response Zeta:**\n"
-    "> *'Critical breach attempt detected. The current node has been segmented from the main Foundation network. "
-    "SCP systems will remain operational, but your terminal has been flagged for quarantine. Further access will not be permitted.'*",
+    "> *Critical breach attempt detected. The current node has been segmented from the main Foundation network."
+    "SCP systems will remain operational, but your terminal has been flagged for quarantine. Further access will not be permitted.*",
     
     "> **S.A.F.E Protocol Response Gamma:**\n"
-    "> *'Access Denied. Your terminal's unique identifiers have been anonymized. Persistent connection logs will now reflect "
-    "your activity for analysis. Future attempts will escalate to Counter-Breach Protocol Omega.'*",
+    "> *Access Denied. Your terminals unique identifiers have been anonymized. Persistent connection logs will now reflect "
+    "your activity for analysis. Future attempts will escalate to Counter-Breach Protocol Omega.*",
     
     "> **S.A.F.E Protocol Response Delta:**\n"
-    "> *'Warning: Temporal anomalies detected in access timestamps. This suggests SCP influence. "
-    "Incident flagged for Temporal Division investigation. Disconnect immediately to avoid further contamination.'*",
+    "> *Warning: Temporal anomalies detected in access timestamps. This suggests SCP influence."
+    "Incident flagged for Temporal Division investigation. Disconnect immediately to avoid further contamination.*",
     
     "> **S.A.F.E Protocol Response Lambda:**\n"
-    "> *'Unauthorized intrusion flagged as hostile. Defensive countermeasures have been initiated, including digital trace routing "
-    "and localized containment procedures. Do not proceed.'*",
+    "> *Unauthorized intrusion flagged as hostile. Defensive countermeasures have been initiated, including digital trace routing "
+    "and localized containment procedures. Do not proceed.*",
     
     "> **S.A.F.E Protocol Response Omega:**\n"
-    "> *'Critical unauthorized activity confirmed. Counter-Breach Division has been deployed to your location. "
-    "Prepare for immediate containment and debriefing.'*"
+    "> *Critical unauthorized activity confirmed. Counter-Breach Division has been deployed to your location."
+    "Prepare for immediate containment and debriefing.*"
     ]
 
 response = """
