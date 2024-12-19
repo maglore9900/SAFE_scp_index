@@ -10,7 +10,6 @@ from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 import environ
 import re
-from langchain.vectorstores import FAISS
 from langchain.schema import Document
 from pathlib import Path
 from time import sleep
@@ -43,7 +42,7 @@ vectorstore = FAISS(
 documents = []
 entry = []
 UUID = 0
-db_count = 0
+db_count = 3
 pattern = r"^Identifier: (SCP-\d+)$"
 base_dir = Path("scp_data")
 base_dir.mkdir(exist_ok=True)  # Ensure the base directory exists
@@ -52,43 +51,42 @@ with open('data.txt', 'r') as file:
     f = file.read()
     for g in f.split('",'):
         try:
-            print(f"UUID {UUID}")
-            print(len(g))
-            scp_name = None
-            lines = g.split('\n')
-            for l in lines:
-                l = re.sub(r'^"', '', l)
-                entry.append(f"{l}\n")
-                match = re.match(pattern, l)
-                if match:
-                    scp_name = match.group(1)
-            content = ' '.join(entry)
-            print(f"Setting document object for {scp_name}")
-            document = Document(
-                page_content=content,
-                metadata={"SCP_ID": scp_name},
-            )
-            documents.append(document)
-            if UUID >= 0 and UUID % 1000 == 0:
-                print("writing to datastore")
-                current_db_dir = base_dir / f"db_{db_count}"
-                current_db_dir.mkdir(exist_ok=True)  
-                
-                print(f"Writing batch {db_count}")
-                if not (current_db_dir / "index.faiss").exists():
-                    # Create a new FAISS vector store
-                    vectorstore = FAISS.from_documents(documents, embeddings)
-                    vectorstore.save_local(str(current_db_dir))
-                else:
-                    # Load and merge with the existing vector store
-                    old_vectorstore = FAISS.load_local(str(current_db_dir), embeddings, allow_dangerous_deserialization=True)
-                    tmp_vectorstore = FAISS.from_documents(documents, embeddings)
-                    old_vectorstore.merge_from(tmp_vectorstore)
-                    old_vectorstore.save_local(str(current_db_dir))
-                documents = []
-                db_count += 1
-                sleep(3)  # To avoid potential race conditions or performance hits
-
+            if UUID >= 1500:
+                print(f"UUID {UUID}")
+                print(len(g))
+                scp_name = None
+                lines = g.split('\n')
+                for l in lines:
+                    l = re.sub(r'^"', '', l)
+                    entry.append(f"{l}\n")
+                    match = re.match(pattern, l)
+                    if match:
+                        scp_name = match.group(1)
+                content = ' '.join(entry)
+                print(f"Setting document object for {scp_name}")
+                document = Document(
+                    page_content=content,
+                    metadata={"SCP_ID": scp_name},
+                )
+                documents.append(document)
+                if UUID >= 0 and UUID % 500 == 0:
+                    print("writing to datastore")
+                    current_db_dir = base_dir / f"db_{db_count}"
+                    current_db_dir.mkdir(exist_ok=True)  
+                    
+                    print(f"Writing batch {db_count}")
+                    if not (current_db_dir / "index.faiss").exists():
+                        # Create a new FAISS vector store
+                        vectorstore = FAISS.from_documents(documents, embeddings)
+                        vectorstore.save_local(str(current_db_dir))
+                    else:
+                        # Load and merge with the existing vector store
+                        old_vectorstore = FAISS.load_local(str(current_db_dir), embeddings, allow_dangerous_deserialization=True)
+                        tmp_vectorstore = FAISS.from_documents(documents, embeddings)
+                        old_vectorstore.merge_from(tmp_vectorstore)
+                        old_vectorstore.save_local(str(current_db_dir))
+                    documents = []
+                    db_count += 1
             UUID += 1
         except Exception as e:
             print(f"An exception occured: {e}")

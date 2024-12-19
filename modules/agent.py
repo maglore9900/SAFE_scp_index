@@ -84,6 +84,6 @@ class Agents():
         result = await self.response_agent.arun(self.response.format(query=query, context=result.content))
         self.active_mem.add_data(result.content)
         result = result.content
-        response = prompt.response.format(user=user, query=query, result=result)
+        response = prompts.response.format(user=user, query=query, result=result)
         return response
 
