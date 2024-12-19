@@ -1,6 +1,7 @@
 from phi.agent import Agent
 from phi.tools.searxng import Searxng
 from modules import adapter, tools, prompts, active_mem
+import random
 
 class Agents():
     def __init__(self, env):
@@ -67,34 +68,22 @@ class Agents():
         )
         
     async def invoke_agent(self, query, user, filename=None): 
+        #! gate-keeper protocol
         gate = self.ad.llm_chat.invoke(self.gate.format(query=query))
         if "no" in gate.content.lower():
-            return "<ACCESS DENIED>"
+            return prompts.deny.format(user=user, deny_type=random.choice(prompts.deny_type))
         if filename:
             query = query + " these files: " + ", ".join(filename)
+        #! memory
         self.active_mem.add_data(query)
         print(f"current active mem length: {len(self.active_mem.value)}")
+        #! agent manager
         prompt = self.prompt.format(query=query, chat_history=self.active_mem.value)
         result = await self.agent_team.arun(prompt)
-        # print(result)
-        # print()
         #! character response
         result = await self.response_agent.arun(self.response.format(query=query, context=result.content))
         self.active_mem.add_data(result.content)
         result = result.content
-        result = f"""[Session Begin]
-<<< S.A.F.E >>>
-Welcome, Agent [ {user} ].
-
-Request Received: [ {query} ]
-
-Performing Clearance Verification...
-Clearance Verified.
-
-""" + result + """
-
-Reminder: Ensure this information remains within Foundation parameters. Unauthorized dissemination is subject to immediate disciplinary action.
-[Session End]
-"""
-        return result
+        response = prompt.response.format(user=user, query=query, result=result)
+        return response
 
