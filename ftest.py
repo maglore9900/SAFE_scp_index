@@ -42,7 +42,7 @@ vectorstore = FAISS(
 documents = []
 entry = []
 UUID = 0
-db_count = 3
+db_count = 6
 pattern = r"^Identifier: (SCP-\d+)$"
 base_dir = Path("scp_data")
 base_dir.mkdir(exist_ok=True)  # Ensure the base directory exists
@@ -51,7 +51,7 @@ with open('data.txt', 'r') as file:
     f = file.read()
     for g in f.split('",'):
         try:
-            if UUID >= 1500:
+            if UUID >= (db_count * 500):
                 print(f"UUID {UUID}")
                 print(len(g))
                 scp_name = None

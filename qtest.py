@@ -1,5 +1,4 @@
-from modules import adapter
-import environ
+from transformers import AutoTokenizer
 
 # env = environ.Env()
 # environ.Env.read_env()
@@ -36,8 +35,11 @@ from datetime import datetime
 #     index_to_docstore_id={},
 # )
 
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+
 load_start = datetime.now()
-vectorstore = FAISS.load_local("scp_data", embeddings, allow_dangerous_deserialization=True)
+vectorstore = FAISS.load_local("backup", embeddings, allow_dangerous_deserialization=True)
 load_finish = datetime.now()
 
 search_start = datetime.now()
@@ -49,6 +51,10 @@ results = vectorstore.similarity_search(
 )
 search_finish = datetime.now()
 # for res in results:
-print(results)
+# print(results)
 print(f"load time: {load_finish - load_start}\n search time: {search_finish - search_start}")
+for result in results:
+    print(len(result.page_content))
+    print(len(tokenizer.encode(result.page_content)))
+# print(len(results["page_content"]))
 #     print(f"* {res.page_content} [{res.metadata}]")
