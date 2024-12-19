@@ -19,6 +19,7 @@ from typing import Dict
 from modules import prompts
 
 
+
 class Adapter:
     def __init__(self, env):
         self.llm_text = env("LLM_TYPE")
@@ -36,7 +37,8 @@ class Adapter:
             self.model = OpenAIChat(id=env("OPENAI_MODEL"))
             self.embedding = OpenAIEmbeddings(model="text-embedding-ada-002")
         elif self.llm_text.lower() == "local":
-            from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+            from langchain_huggingface import HuggingFaceEmbeddings
+
             # from langchain_community.chat_models import ChatOllama
             from langchain_ollama import ChatOllama, OllamaLLM
             from phi.model.ollama import Ollama
@@ -56,7 +58,7 @@ class Adapter:
             model_name = "BAAI/bge-small-en"
             model_kwargs = {"device": "cpu"}
             encode_kwargs = {"normalize_embeddings": True}
-            self.embedding = HuggingFaceBgeEmbeddings(
+            self.embedding = HuggingFaceEmbeddings(
                 model_name=model_name,
                 model_kwargs=model_kwargs,
                 encode_kwargs=encode_kwargs,
