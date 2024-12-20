@@ -22,15 +22,8 @@ class Agents():
             map=True,
             videos=True
         )
-        self.prompt = """
-        <instructions>You are a helpful assistant whose job is to answer the user query</instruction>
-        <query>{query}</query>
-        <chat_history>{chat_history}</chat_history>
-        """
-        self.response = """
-        User: {query}
-        Context: {context}
-        """
+        self.prompt = prompts.prompt
+        self.response = prompts.response
         self.gate = prompts.gate
         self.websearch_agent = Agent(
             name="Web Agent",
@@ -43,7 +36,7 @@ class Agents():
         ) 
         self.data_store_agent = Agent(
             name="Data Store Agent",
-            role="Your job is to save data or query saved data. You have a number of tools to help you with this.",
+            role="Your job manage all data related to SCPs. You can save data to a data store or query data stores.",
             model=self.model,
             instructions=["Support user actions with saving files or querying data stores", "You have a number of tools, use them"],
             tools=[tools.DataSaveToolkit(self.ad), tools.DataQueryToolkit(self.ad)],
@@ -56,13 +49,13 @@ class Agents():
             role="A response agent that responds to the user based on the context provided.",
             model=self.model2,
             description=prompts.safe,
-            instructions=["Reword the context in your style","Do not reply to the context, reword the context for the user","Always include sources"],
+            instructions=["Reword the context in your style","Do not reply to the context, reword the context for the user"],
             show_tool_calls=True,
             markdown=True,
         )
         self.agent_team = Agent (
-            team=[self.websearch_agent],#, self.data_store_agent],
-            instructions=["First choose the best agent or agents to answer the user query", "Always use Response Agent at the end to respond to the user with the information","When a user asks a question pertaining to a file of any kind, pass that to the Data Store Agent. This agent will tell you if that information or file exists."],
+            team=[self.websearch_agent, self.data_store_agent],
+            instructions=["When a user asks a question pertaining to SCP of any kind, pass that to the Data Store Agent. This agent will tell you if that information or file exists.", "if the Data Store Agent tells you the information isnt found, you may use the Web Agent."],
             show_tool_calls=True,
             markdown=True,   
         )

@@ -164,3 +164,4 @@ cython_debug/
 scp_data/
 data.txt
 /.vscode
+backup/

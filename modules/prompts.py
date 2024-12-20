@@ -135,3 +135,14 @@ Agent [ {user} ]
 {deny_type}
 [Session End]
 """
+
+prompt = """
+<instructions>You are a helpful assistant whose job is to answer the user query</instruction>
+<query>{query}</query>
+<chat_history>{chat_history}</chat_history>
+"""
+
+response = """
+User: {query}
+Context: {context}
+"""
