@@ -108,6 +108,7 @@ class Adapter:
     def query_datastore(self, query):
         print("Entered function")
         try:
+            result = ''
             # Check if the FAISS index files exist in the vector_store directory
             # if not (Path("backup/index.faiss").exists() and Path("backup/index.pkl").exists()):
             #     return "No documents have been added to the datastore yet."
@@ -148,10 +149,13 @@ class Adapter:
                 print(filters)
 
             if filters:
-                result = self.vector_store.as_retriever(search_kwargs={"k": 3}, **filters).invoke(query)
+                results = self.vector_store.as_retriever(search_kwargs={"k": 3}, **filters).invoke(query)
             else:
-                result = self.vector_store.as_retriever(search_kwargs={"k": 3}).invoke(query)
+                results = self.vector_store.as_retriever(search_kwargs={"k": 3}).invoke(query)
 
+            for response in results:
+                for content in response:
+                    result+"\n"+content.page_content
             return result
 
         except Exception as e:
