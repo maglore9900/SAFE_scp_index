@@ -1,19 +1,9 @@
 from transformers import AutoTokenizer
-
-# env = environ.Env()
-# environ.Env.read_env()
-
-# ad = adapter.Adapter(env)
-
-# results = ad.query_datastore("scp")
-# print(results)
-
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 from langchain_community.vectorstores import FAISS
-
+from datetime import datetime
 
 model_name = "BAAI/bge-small-en"
-# model_name = "BAAI/bge-base-en-v1.5"
 model_kwargs = {"device": "cpu"}
 encode_kwargs = {"normalize_embeddings": True}
 embeddings = HuggingFaceBgeEmbeddings(
@@ -21,20 +11,9 @@ embeddings = HuggingFaceBgeEmbeddings(
     model_kwargs=model_kwargs,
     encode_kwargs=encode_kwargs,
 )
-# import faiss
 
-# index = faiss.IndexFlatL2(len(embeddings.embed_query("hello world")))
 
-from datetime import datetime
-# print(results)
-# from langchain_community.vectorstores import FAISS
-# vectorstore = FAISS(
-#     embedding_function=embeddings,
-#     index=index,
-#     docstore="scp_data",
-#     index_to_docstore_id={},
-# )
-
+# Only used to get at token count, not necessary for the actual query
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 
@@ -50,11 +29,8 @@ results = vectorstore.similarity_search(
     filter={"SCP_ID": "SCP-010"},
 )
 search_finish = datetime.now()
-# for res in results:
-# print(results)
+
 print(f"load time: {load_finish - load_start}\n search time: {search_finish - search_start}")
 for result in results:
     print(len(result.page_content))
     print(len(tokenizer.encode(result.page_content)))
-# print(len(results["page_content"]))
-#     print(f"* {res.page_content} [{res.metadata}]")

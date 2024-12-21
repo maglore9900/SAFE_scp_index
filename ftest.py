@@ -1,8 +1,5 @@
 
 
-from time import sleep
-from pathlib import Path
-import re
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 import faiss
 from langchain_community.docstore.in_memory import InMemoryDocstore
@@ -10,9 +7,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 import environ
 import re
-from langchain.schema import Document
 from pathlib import Path
-from time import sleep
 
 env = environ.Env()
 environ.Env.read_env()
