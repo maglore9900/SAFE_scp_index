@@ -166,3 +166,4 @@ data.txt
 /.vscode
 backup/
 qdb*/
+*.whl
