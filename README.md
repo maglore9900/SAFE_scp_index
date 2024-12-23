@@ -8,7 +8,7 @@
 
 ```
 
-S.A.F.E.(Secure Artificial Foundation Engine), an advanced artificial intelligence system designed to assist in accessing and analyzing classified SCP Foundation data.
+S.A.F.E. (Secure Artificial Foundation Engine), an advanced artificial intelligence system designed to assist in accessing and analyzing classified SCP Foundation data.
 
 ### What is SCP?
 
@@ -16,7 +16,7 @@ The SCP Foundation is a fictional organization featured in stories created by co
 
 ### What is S.A.F.E?
 
-S.A.F.E is a discord bot that takes on the role of an AI developed by the SCP Foundation.
+S.A.F.E is a discord bot that takes on the role of an AI, developed by the SCP Foundation.
 
 ### How does it work?
 
