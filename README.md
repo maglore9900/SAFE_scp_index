@@ -10,15 +10,15 @@
 
 S.A.F.E.(Secure Artificial Foundation Engine), an advanced artificial intelligence system designed to assist in accessing and analyzing classified SCP Foundation data.
 
-##### What is SCP?
+#### What is SCP?
 
 The SCP Foundation is a fictional organization featured in stories created by contributors on the SCP Wiki, a wiki-based collaborative writing project. Within the project's shared fictional universe, the SCP Foundation is a secret organization that is responsible for capturing, containing, and studying various paranormal, supernatural, and other mysterious phenomena (known as "anomalies" or "SCPs"), while also keeping their existence hidden from the rest of society.
 
-##### What is S.A.F.E?
+#### What is S.A.F.E?
 
 S.A.F.E is a discord bot that takes on the role of an AI developed by the SCP Foundation.
 
-##### How does it work?
+#### How does it work?
 
 S.A.F.E uses the discord python module to interact with a server. When users mention S.A.F.E it listens, and depending on the user query, will respond accordingly.
 
