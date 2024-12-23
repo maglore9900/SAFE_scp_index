@@ -3,7 +3,11 @@ from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 from langchain_community.vectorstores import FAISS
 from datetime import datetime
 
-model_name = "BAAI/bge-small-en"
+from langchain_qdrant import QdrantVectorStore
+from qdrant_client import QdrantClient
+from qdrant_client.http.models import Distance, VectorParams
+
+model_name = "BAAI/bge-large-en-v1.5"
 model_kwargs = {"device": "cpu"}
 encode_kwargs = {"normalize_embeddings": True}
 embeddings = HuggingFaceBgeEmbeddings(
@@ -18,16 +22,29 @@ tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 
 load_start = datetime.now()
-vectorstore = FAISS.load_local("backup", embeddings, allow_dangerous_deserialization=True)
+client = QdrantClient(path="qdb")
+
+vectorstore = QdrantVectorStore(
+    client=client,
+    collection_name="scp_collection",
+    embedding=embeddings,
+)
+# vectorstore = FAISS.load_local("backup", embeddings, allow_dangerous_deserialization=True)
 load_finish = datetime.now()
 
 search_start = datetime.now()
 
+# results = vectorstore.similarity_search(
+#     "scp-010",
+#     k=2,
+#     filter={"SCP_ID": "SCP-010"},
+# )
+
 results = vectorstore.similarity_search(
-    "scp-010",
-    k=2,
-    filter={"SCP_ID": "SCP-010"},
+    "tell me about scp-002", k=2
 )
+for res in results:
+    print(f"* {res.page_content} [{res.metadata}]")
 search_finish = datetime.now()
 
 print(f"load time: {load_finish - load_start}\n search time: {search_finish - search_start}")

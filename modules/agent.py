@@ -71,12 +71,12 @@ class Agents():
         self.active_mem.add_data(query)
         print(f"current active mem length: {len(self.active_mem.value)}")
         #! agent manager
-        prompt = self.prompt.format(query=query, chat_history=self.active_mem.value)
-        result = await self.agent_team.arun(prompt)
+        manager = self.prompt.format(query=query, chat_history=self.active_mem.value)
+        result = await self.agent_team.arun(manager)
         #! character response
-        result = await self.response_agent.arun(self.response.format(query=query, context=result.content))
-        self.active_mem.add_data(result.content)
-        result = result.content
-        response = prompts.response.format(user=user, query=query, result=result)
+        safe_response = await self.ad.llm_chat.ainvoke(prompts.safe.format(query=query, context=result.content))
+        self.active_mem.add_data(safe_response.content)
+        result = safe_response.content
+        response = prompts.response.format(user=user, query=query, context=result)
         return response
 

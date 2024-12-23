@@ -14,6 +14,9 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.vectorstores import FAISS
 from langchain.chains import RetrievalQAWithSourcesChain, RetrievalQA
 
+from langchain_qdrant import QdrantVectorStore
+from qdrant_client import QdrantClient, models
+
 from langchain_core.documents import Document
 from pathlib import Path
 from typing import Dict
@@ -28,7 +31,8 @@ class Adapter:
         self.char_prompt = getattr(prompts, "safe", "You are a helpful assistant.")
         self.char_prompt = self.char_prompt + "\n<USER QUERY>{query}</USER QUERY>"
         from langchain_huggingface import HuggingFaceEmbeddings
-        model_name = "BAAI/bge-small-en"
+        # model_name = "BAAI/bge-small-en"
+        model_name = "BAAI/bge-large-en-v1.5"
         model_kwargs = {"device": "cpu"}
         encode_kwargs = {"normalize_embeddings": True}
         embedding = HuggingFaceEmbeddings(
@@ -36,7 +40,14 @@ class Adapter:
             model_kwargs=model_kwargs,
             encode_kwargs=encode_kwargs,
         )
-        self.vector_store = FAISS.load_local("backup", embedding, allow_dangerous_deserialization=True)
+        client = QdrantClient(path="qdb")
+
+        self.vectorstore = QdrantVectorStore(
+            client=client,
+            collection_name="scp_collection",
+            embedding=embedding,
+        )
+        # self.vector_store = FAISS.load_local("backup", embedding, allow_dangerous_deserialization=True)
         if self.llm_text.lower() == "openai":
             from langchain_openai import OpenAIEmbeddings, ChatOpenAI
             from phi.model.openai import OpenAIChat
@@ -109,53 +120,44 @@ class Adapter:
         print("Entered function")
         try:
             result = ''
-            # Check if the FAISS index files exist in the vector_store directory
-            # if not (Path("backup/index.faiss").exists() and Path("backup/index.pkl").exists()):
-            #     return "No documents have been added to the datastore yet."
-            
-            # Load the FAISS vector store from the specified directory
-            # retriever = FAISS.load_local("backup", embedding, allow_dangerous_deserialization=True).as_retriever()
-
-            # print("Retriever loaded successfully")
-
-            # Create the QA chain with the loaded retriever
-            # qa = RetrievalQA.from_chain_type(
-            #     llm=self.llm_chat, chain_type="stuff", retriever=self.vector_store.as_retriever(), verbose=True
-            # )
-
-            
-
-            # Query the retriever using the input query
-            # result = qa.invoke(query)  # Directly passing the query to the QA chain
-            # result = result['answer']  # Extract the answer from the result dictionary
-
-
             if "scp" in query.lower():
-                # Define the regex pattern to match patterns like "scp-002", "scp009", etc.
                 pattern = r'\bscp-?(\d+)\b'
-                # Use re.IGNORECASE to make the pattern case insensitive
                 matches = re.findall(pattern, query, re.IGNORECASE)
                 scp_codes = []
 
                 for match in matches:
-                    # Directly format the numeric part retrieved by the regex group
                     match = re.sub(r'scp', '', match, flags=re.IGNORECASE)
                     match = re.sub(r'-', '', match)
-                    formatted_code = f"SCP-{match}"  # zfill to ensure at least 3 digits
+                    formatted_code = f"SCP-{match}"  
                     scp_codes.append(formatted_code)
-
-                # Create the filters dynamically
-                filters = {"filters": [{"SCP_ID": code} for code in scp_codes]}
-                print(filters)
-
-            if filters:
-                results = self.vector_store.as_retriever(search_kwargs={"k": 3}, **filters).invoke(query)
+            if scp_codes:
+                for each in scp_codes:
+                    data = self.vectorstore.similarity_search(
+                    query,
+                    k=2,
+                    collection_name="scp_collection",
+                    filter=models.Filter(
+                        must=[
+                            models.FieldCondition(
+                                    key="metadata.SCP_ID",
+                                    match=models.MatchValue(
+                                        value=each,
+                                    ),
+                                ),
+                            ]
+                        )
+                    )
+                    for res in data:
+                        result += f"{res.page_content}\n"
             else:
-                results = self.vector_store.as_retriever(search_kwargs={"k": 3}).invoke(query)
-
-            for response in results:
-                for content in response:
-                    result+"\n"+content.page_content
+                data = self.vectorstore.similarity_search(
+                    query,
+                    k=2,
+                    collection_name="scp_collection",
+                )
+                for res in data:
+                    result += f"{res.page_content}\n"
+ 
             return result
 
         except Exception as e:
