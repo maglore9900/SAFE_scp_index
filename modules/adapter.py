@@ -10,10 +10,7 @@ from langchain_community.document_loaders import (
     UnstructuredCSVLoader
 )
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_community.vectorstores import FAISS
-from langchain.chains import RetrievalQAWithSourcesChain, RetrievalQA
-
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient, models
 
