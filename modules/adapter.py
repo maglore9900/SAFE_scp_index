@@ -33,7 +33,7 @@ class Adapter:
         from langchain_huggingface import HuggingFaceEmbeddings
         # model_name = "BAAI/bge-small-en"
         model_name = "BAAI/bge-large-en-v1.5"
-        model_kwargs = {"device": "cpu"}
+        model_kwargs = {"device": "cuda"}
         encode_kwargs = {"normalize_embeddings": True}
         embedding = HuggingFaceEmbeddings(
             model_name=model_name,

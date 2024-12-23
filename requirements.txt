@@ -4,9 +4,11 @@ python-environ
 langchain_experimental
 langchain_openai
 langchain_ollama
+langchain_qdrant
 langchain_huggingface
-faiss-cpu
 pypdf
 unstructured
 python-pptx
 sentence_transformers
+qdrant_client
+discord
